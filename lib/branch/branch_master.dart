@@ -10,12 +10,19 @@ import 'package:admin_dormsync/utils/snackbar.dart';
 import 'package:admin_dormsync/utils/state_cities.dart';
 import 'package:admin_dormsync/utils/textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:searchfield/searchfield.dart';
 
 class CreateBranch extends StatefulWidget {
-  CreateBranch({super.key, required this.licenceNo, this.branchData});
+  CreateBranch({
+    super.key,
+    required this.licenceNo,
+    required this.isMain,
+    this.branchData,
+  });
   String? licenceNo;
   BranchList? branchData;
+  bool isMain;
   @override
   State<CreateBranch> createState() => _CreateBranchState();
 }
@@ -26,6 +33,7 @@ class _CreateBranchState extends State<CreateBranch> {
   TextEditingController stateController = TextEditingController();
   TextEditingController cityController = TextEditingController();
   TextEditingController contactNoController = TextEditingController();
+  TextEditingController hostlerLimitController = TextEditingController();
   TextEditingController messBiomaxController = TextEditingController();
   TextEditingController hostelBiomaxController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
@@ -43,10 +51,12 @@ class _CreateBranchState extends State<CreateBranch> {
       branchNameController.text = widget.branchData!.branchName ?? "";
       branchAddressController.text = widget.branchData!.bAddress ?? "";
       contactNoController.text = widget.branchData!.contactNo ?? "";
+      hostlerLimitController.text = widget.branchData!.other5 ?? "";
       messBiomaxController.text = widget.branchData!.other1 ?? "";
       hostelBiomaxController.text = widget.branchData!.other2 ?? "";
       stateController.text = widget.branchData!.bState ?? "";
       cityController.text = widget.branchData!.bCity ?? "";
+      selectedOption = widget.branchData!.other4 ?? "Hostel";
       userNameController.text = widget.branchData!.user![0].username ?? "";
       passwordController.text = widget.branchData!.user![0].password ?? "";
 
@@ -70,6 +80,10 @@ class _CreateBranchState extends State<CreateBranch> {
     }
     super.initState();
   }
+
+  String? selectedOption;
+
+  final List<String> options = ["PG", "Hostel"];
 
   String _previousTextFrom = '';
   String _previousTextTo = '';
@@ -119,6 +133,11 @@ class _CreateBranchState extends State<CreateBranch> {
                   controller: contactNoController,
                   image: Images.contactNo,
                   hintText: "Contact Number*",
+                ),
+                CommonTextField(
+                  controller: hostlerLimitController,
+                  image: Images.studentId,
+                  hintText: "Hosteler Limit*",
                 ),
 
                 Row(
@@ -231,15 +250,57 @@ class _CreateBranchState extends State<CreateBranch> {
                   image: Images.lock,
                   hintText: "Password*",
                 ),
-
                 if (widget.branchData == null)
+                  Center(
+                    child: Row(
+                      children: [
+                        Image.asset(Images.department, height: 30),
+                        SizedBox(width: 5),
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            value: selectedOption,
+                            style: TextStyle(
+                              color: AppColor.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            decoration: InputDecoration(
+                              isDense: true,
+                              border: UnderlineInputBorder(),
+                              hintText: "Select PG or Hostel",
+                              hintStyle: TextStyle(
+                                color: AppColor.black.withValues(alpha: .81),
+                                fontWeight: FontWeight.w500,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                            ),
+                            items:
+                                options.map((String item) {
+                                  return DropdownMenuItem<String>(
+                                    value: item,
+                                    child: Text(item),
+                                  );
+                                }).toList(),
+                            onChanged: (String? value) {
+                              setState(() {
+                                selectedOption = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                Container(),
+                if (widget.branchData == null && selectedOption == "Hostel")
                   CommonTextField(
                     onPressIcon: () async {
                       selectDate(context, fromDateController).then((onValue) {
                         setState(() {});
                       });
                     },
-
                     controller: fromDateController,
                     image: Images.year,
                     hintText: 'Session Start Date*',
@@ -253,14 +314,13 @@ class _CreateBranchState extends State<CreateBranch> {
                       );
                     },
                   ),
-                if (widget.branchData == null)
+                if (widget.branchData == null && selectedOption == "Hostel")
                   CommonTextField(
                     onPressIcon: () async {
                       selectDate(context, toDateController).then((onValue) {
                         setState(() {});
                       });
                     },
-
                     controller: toDateController,
                     image: Images.year,
                     hintText: 'Session End Date*',
@@ -349,6 +409,9 @@ class _CreateBranchState extends State<CreateBranch> {
       'password': passwordController.text.trim().toString(),
       'other1': messBiomaxController.text.trim().toString(),
       'other2': hostelBiomaxController.text.trim().toString(),
+      'other3': widget.isMain ? "1" : "0",
+      'other4': selectedOption ?? "Hostel",
+      'other5': hostlerLimitController.text.trim().toString(),
     });
 
     if (response["status"] == true) {
@@ -373,6 +436,9 @@ class _CreateBranchState extends State<CreateBranch> {
           'password': passwordController.text.trim(),
           'other1': messBiomaxController.text.trim().toString(),
           'other2': hostelBiomaxController.text.trim().toString(),
+          'other3': widget.branchData?.other3 ?? "1",
+          'other4': widget.branchData?.other4 ?? "PG",
+          'other5': hostlerLimitController.text.trim().toString(),
           '_method': "PUT",
         });
 
@@ -389,8 +455,16 @@ class _CreateBranchState extends State<CreateBranch> {
     var response = await ApiService.postData('session', {
       'licence_no': widget.licenceNo,
       'branch_id': branchId,
-      'session_start_date': fromDateController.text,
-      'session_end_date': toDateController.text,
+      'session_start_date':
+          selectedOption == "Hostel"
+              ? fromDateController.text
+              : DateFormat('dd/MM/yyyy').format(DateTime.now()),
+      'session_end_date':
+          selectedOption == "Hostel"
+              ? toDateController.text
+              : DateFormat(
+                'dd/MM/yyyy',
+              ).format(DateTime.now().add(Duration(days: 36500))),
       'is_active': true,
     });
 

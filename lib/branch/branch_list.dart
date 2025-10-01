@@ -105,7 +105,10 @@ class _BranchListScreenState extends State<BranchListScreen> {
           InkWell(
             onTap: () async {
               var updatedData = await pushTo(
-                CreateBranch(licenceNo: widget.licenceNo),
+                CreateBranch(
+                  licenceNo: widget.licenceNo,
+                  isMain: branchList.isEmpty,
+                ),
               );
               if (updatedData == "New Data") {
                 getBranches().then((value) {
@@ -265,7 +268,7 @@ class _BranchListScreenState extends State<BranchListScreen> {
                     tableHeader('Contact No'),
                     tableHeader('Address'),
                     tableHeader('City'),
-                    tableHeader('State'),
+                    tableHeader('Type'),
                     tableHeader('Username'),
                     tableHeader('Password'),
                     tableHeader('Action'),
@@ -281,7 +284,7 @@ class _BranchListScreenState extends State<BranchListScreen> {
                       tableBody(item.contactNo ?? ''),
                       tableBody(item.bAddress ?? ''),
                       tableBody(item.bCity ?? ''),
-                      tableBody(item.bState ?? ''),
+                      tableBody(item.other4 ?? ''),
                       tableBody(item.user![0].username ?? ''),
                       tableBody(item.user![0].password ?? ''),
                       TableCell(
@@ -301,6 +304,7 @@ class _BranchListScreenState extends State<BranchListScreen> {
                                     CreateBranch(
                                       licenceNo: widget.licenceNo,
                                       branchData: item,
+                                      isMain: false,
                                     ),
                                   );
                                   if (updatedData == "New Data") {
@@ -310,54 +314,55 @@ class _BranchListScreenState extends State<BranchListScreen> {
                                   }
                                 },
                               ),
-                              IconButton(
-                                icon: Icon(
-                                  size: 20,
-                                  Icons.delete,
-                                  color: AppColor.red,
-                                ),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder:
-                                        (dialogContext) => AlertDialog(
-                                          title: const Text("Warning"),
-                                          content: const Text(
-                                            "Are you sure you want to delete this branch?",
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed:
-                                                  () =>
-                                                      Navigator.of(
-                                                        dialogContext,
-                                                      ).pop(),
-                                              child: const Text("Cancel"),
+                              if (item.other3 == "0")
+                                IconButton(
+                                  icon: Icon(
+                                    size: 20,
+                                    Icons.delete,
+                                    color: AppColor.red,
+                                  ),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder:
+                                          (dialogContext) => AlertDialog(
+                                            title: const Text("Warning"),
+                                            content: const Text(
+                                              "Are you sure you want to delete this branch?",
                                             ),
-                                            ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: AppColor.red,
+                                            actions: [
+                                              TextButton(
+                                                onPressed:
+                                                    () =>
+                                                        Navigator.of(
+                                                          dialogContext,
+                                                        ).pop(),
+                                                child: const Text("Cancel"),
                                               ),
-                                              onPressed: () {
-                                                deleteBranch(item.id!).then((
-                                                  value,
-                                                ) {
-                                                  getBranches().then((value) {
-                                                    setState(() {
-                                                      Navigator.of(
-                                                        dialogContext,
-                                                      ).pop();
+                                              ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: AppColor.red,
+                                                ),
+                                                onPressed: () {
+                                                  deleteBranch(item.id!).then((
+                                                    value,
+                                                  ) {
+                                                    getBranches().then((value) {
+                                                      setState(() {
+                                                        Navigator.of(
+                                                          dialogContext,
+                                                        ).pop();
+                                                      });
                                                     });
                                                   });
-                                                });
-                                              },
-                                              child: const Text("Delete"),
-                                            ),
-                                          ],
-                                        ),
-                                  );
-                                },
-                              ),
+                                                },
+                                                child: const Text("Delete"),
+                                              ),
+                                            ],
+                                          ),
+                                    );
+                                  },
+                                ),
                             ],
                           ),
                         ),
