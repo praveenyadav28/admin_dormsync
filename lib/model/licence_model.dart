@@ -56,7 +56,7 @@ class LicenceList {
 
   factory LicenceList.fromJson(Map<String, dynamic> json) => LicenceList(
     id: json["id"],
-    licenceNo: json["licence_no"],
+    licenceNo: json["licence_no"].toString(),
     licenseDueDate:
         json["license_due_date"] == null
             ? null
@@ -77,7 +77,7 @@ class LicenceList {
     dueAmt: json["due_amt"],
     amcAmt: json["amc_amt"],
     branchCount: json["branch_count"],
-  
+
     salesman: json["salesman"],
     remarks: json["remarks"],
     createdAt:

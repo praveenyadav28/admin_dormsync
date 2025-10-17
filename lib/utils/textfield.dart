@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class CommonTextField extends StatelessWidget {
   CommonTextField({
-    required this.image,
+    this.image,
     this.hintText,
     this.controller,
     this.onChanged,
@@ -16,7 +16,7 @@ class CommonTextField extends StatelessWidget {
     this.suffixIcon,
     super.key,
   });
-  String image;
+  String? image;
   String? hintText;
   TextEditingController? controller;
   bool? readOnly;
@@ -30,8 +30,9 @@ class CommonTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        InkWell(onTap: onPressIcon, child: Image.asset(image, height: 30)),
-        SizedBox(width: 5),
+        if (image != null)
+          InkWell(onTap: onPressIcon, child: Image.asset(image!, height: 30)),
+        if (image != null) SizedBox(width: 5),
         Expanded(
           child: TextFormField(
             focusNode: focuesNode,
@@ -46,9 +47,9 @@ class CommonTextField extends StatelessWidget {
             decoration: InputDecoration(
               isDense: true,
               border: UnderlineInputBorder(),
-              hintText: hintText ?? "",
+              labelText: hintText ?? "",
               suffixIcon: suffixIcon,
-              hintStyle: TextStyle(
+              labelStyle: TextStyle(
                 color: AppColor.black.withValues(alpha: .81),
                 fontWeight: FontWeight.w500,
               ),

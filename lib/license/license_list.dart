@@ -2,6 +2,7 @@ import 'package:admin_dormsync/branch/branch_list.dart';
 import 'package:admin_dormsync/license/create_license.dart';
 import 'package:admin_dormsync/model/licence_model.dart';
 import 'package:admin_dormsync/onboarding/login.dart';
+import 'package:admin_dormsync/premium/premium_list.dart';
 import 'package:admin_dormsync/utils/colors.dart';
 import 'package:admin_dormsync/utils/components/api.dart';
 import 'package:admin_dormsync/utils/components/prefences.dart';
@@ -101,6 +102,16 @@ class _LicenseViewScreenState extends State<LicenseViewScreen> {
           style: TextStyle(color: AppColor.white, fontWeight: FontWeight.w500),
         ),
         actions: [
+          TextButton(
+            onPressed: () {
+              pushTo(PremiumListScreen());
+            },
+            child: Text(
+              "Premium Features",
+              style: TextStyle(color: AppColor.white, fontSize: 16),
+            ),
+          ),
+          SizedBox(width: Sizes.width * .03),
           InkWell(
             onTap: () async {
               var updatedData = await pushTo(CreateLicense());
@@ -202,6 +213,8 @@ class _LicenseViewScreenState extends State<LicenseViewScreen> {
                     const SizedBox(width: 8),
                     Spacer(),
                     Spacer(),
+                    Text("Total ${licenceList.length}"),
+                    const SizedBox(width: 8),
                     // Container(
                     //   margin: EdgeInsets.symmetric(vertical: 3, horizontal: 8),
                     //   decoration: BoxDecoration(color: Color(0xffECFFE5)),
@@ -347,21 +360,55 @@ class _LicenseViewScreenState extends State<LicenseViewScreen> {
                                     },
                                   ),
 
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.delete,
-                                      color: AppColor.red,
-                                    ),
-                                    onPressed: () {
-                                      deleteLicenes(item.id.toString()).then((
-                                        value,
-                                      ) {
-                                        getLicenes().then((valy) {
-                                          setState(() {});
-                                        });
-                                      });
-                                    },
-                                  ),
+                                  // IconButton(
+                                  //   icon: Icon(
+                                  //     Icons.delete,
+                                  //     color: AppColor.red,
+                                  //   ),
+                                  //   onPressed: () {
+                                  //     showDialog(
+                                  //       context: context,
+                                  //       builder:
+                                  //           (dialogContext) => AlertDialog(
+                                  //             title: const Text("Warning"),
+                                  //             content: const Text(
+                                  //               "Are you sure you want to delete this licence?",
+                                  //             ),
+                                  //             actions: [
+                                  //               TextButton(
+                                  //                 onPressed:
+                                  //                     () =>
+                                  //                         Navigator.of(
+                                  //                           dialogContext,
+                                  //                         ).pop(),
+                                  //                 child: const Text("Cancel"),
+                                  //               ),
+                                  //               ElevatedButton(
+                                  //                 style:
+                                  //                     ElevatedButton.styleFrom(
+                                  //                       backgroundColor:
+                                  //                           AppColor.red,
+                                  //                     ),
+                                  //                 onPressed: () {
+                                  //                   deleteLicenes(
+                                  //                     item.id.toString(),
+                                  //                   ).then((value) {
+                                  //                     getLicenes().then((valy) {
+                                  //                       setState(() {
+                                  //                         Navigator.of(
+                                  //                           dialogContext,
+                                  //                         ).pop();
+                                  //                       });
+                                  //                     });
+                                  //                   });
+                                  //                 },
+                                  //                 child: const Text("Delete"),
+                                  //               ),
+                                  //             ],
+                                  //           ),
+                                  //     );
+                                  //   },
+                                  // ),
                                   IconButton(
                                     icon: Icon(
                                       Icons.edit_outlined,
@@ -435,7 +482,10 @@ class _LicenseViewScreenState extends State<LicenseViewScreen> {
   }
 
   Future deleteLicenes(String id) async {
-    var response = await ApiService.deleteData("licences/delete/$id",licenceNo: null);
+    var response = await ApiService.deleteData(
+      "licences/delete/$id",
+      licenceNo: null,
+    );
 
     if (response["status"] == true) {
       showCustomSnackbarSuccess(context, response['message']);

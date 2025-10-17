@@ -51,6 +51,33 @@ class ApiService {
     }
   }
 
+  static Future putData(String endpoint, Map<String, dynamic> data) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseurl/$endpoint'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Preference.getString(PrefKeys.token)}',
+        },
+        body: jsonEncode(data),
+      );
+      if (response.statusCode == 200) {
+        if (response.body.isNotEmpty) {
+          return json.decode(response.body);
+        } else {
+          throw Exception('Response body is empty');
+        }
+      } else {
+        print(response.body);
+        throw Exception('Failed to post data: ${response.statusCode}');
+      }
+    } catch (e) {
+      log("$e");
+      throw Exception('Failed to post data: $e');
+    }
+  }
+
   static Future deleteData(String endpoint, {String? licenceNo}) async {
     try {
       final response = await http.delete(

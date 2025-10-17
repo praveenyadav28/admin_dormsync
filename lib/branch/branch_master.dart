@@ -156,8 +156,8 @@ class _CreateBranchState extends State<CreateBranch> {
                           fontWeight: FontWeight.w500,
                         ),
                         searchInputDecoration: InputDecoration(
-                          hintText: 'Select State*',
-                          hintStyle: TextStyle(
+                          labelText: 'Select State*',
+                          labelStyle: TextStyle(
                             fontWeight: FontWeight.w500,
                             color: AppColor.black,
                           ),
@@ -191,7 +191,6 @@ class _CreateBranchState extends State<CreateBranch> {
                     Expanded(
                       child: SearchField<String>(
                         controller: cityController,
-                        hint: 'Select City*',
                         suggestionStyle: TextStyle(
                           color: AppColor.black,
                           fontWeight: FontWeight.w500,
@@ -205,7 +204,8 @@ class _CreateBranchState extends State<CreateBranch> {
                             color: AppColor.black,
                             fontWeight: FontWeight.w500,
                           ),
-                          hintStyle: TextStyle(
+                          labelText: 'Select City*',
+                          labelStyle: TextStyle(
                             color: AppColor.black,
                             fontWeight: FontWeight.w500,
                           ),
@@ -266,8 +266,8 @@ class _CreateBranchState extends State<CreateBranch> {
                             decoration: InputDecoration(
                               isDense: true,
                               border: UnderlineInputBorder(),
-                              hintText: "Select PG or Hostel",
-                              hintStyle: TextStyle(
+                              labelText: "Select PG or Hostel",
+                              labelStyle: TextStyle(
                                 color: AppColor.black.withValues(alpha: .81),
                                 fontWeight: FontWeight.w500,
                               ),
@@ -376,12 +376,6 @@ class _CreateBranchState extends State<CreateBranch> {
                               ),
                             ],
                           ),
-                    );
-                  } else if (fromDateController.text.isEmpty ||
-                      toDateController.text.isEmpty) {
-                    showCustomSnackbarError(
-                      context,
-                      "Please select session date",
                     );
                   } else {
                     postBranch();

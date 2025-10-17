@@ -88,6 +88,9 @@ class _CreateLicenseState extends State<CreateLicense> {
       selectedState = null;
       selectedCity = null;
     }
+    getLicenceNo().then((_) {
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -231,8 +234,8 @@ class _CreateLicenseState extends State<CreateLicense> {
                           fontWeight: FontWeight.w500,
                         ),
                         searchInputDecoration: InputDecoration(
-                          hintText: 'Select State*',
-                          hintStyle: TextStyle(
+                          labelText: 'Select State*',
+                          labelStyle: TextStyle(
                             fontWeight: FontWeight.w500,
                             color: AppColor.black,
                           ),
@@ -266,7 +269,7 @@ class _CreateLicenseState extends State<CreateLicense> {
                     Expanded(
                       child: SearchField<String>(
                         controller: cityController,
-                        hint: 'Select City*',
+
                         suggestionStyle: TextStyle(
                           color: AppColor.black,
                           fontWeight: FontWeight.w500,
@@ -280,7 +283,8 @@ class _CreateLicenseState extends State<CreateLicense> {
                             color: AppColor.black,
                             fontWeight: FontWeight.w500,
                           ),
-                          hintStyle: TextStyle(
+                          labelText: 'Select City*',
+                          labelStyle: TextStyle(
                             color: AppColor.black,
                             fontWeight: FontWeight.w500,
                           ),
@@ -473,5 +477,13 @@ class _CreateLicenseState extends State<CreateLicense> {
       showCustomSnackbarError(context, response['message']);
       Navigator.pop(context, "New Data");
     }
+  }
+
+  Future getLicenceNo() async {
+    var response = await ApiService.fetchData("next_licence_no");
+    licenceNoController.text =
+        widget.licenceData != null
+            ? widget.licenceData!.licenceNo!
+            : response['next_licence_no'].toString();
   }
 }
